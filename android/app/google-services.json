@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "71972443520",
+    "project_id": "heddri",
+    "storage_bucket": "heddri.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:71972443520:android:d64ce9ef48b5fdf6fedd65",
+        "android_client_info": {
+          "package_name": "com.heddri.user"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "71972443520-paah2nm5qb5ne6u24jpeq0ok35t639rm.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.heddri.user",
+            "certificate_hash": "a97cca59693c55531b361052f60426c549dd4df9"
+          }
+        },
+        {
+          "client_id": "71972443520-irh6vkspi9h0b28u08jt8c0bg8pmo84k.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDGdQtf8NE8Yz66Om9BaofmNIBGo5fT4gY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "71972443520-irh6vkspi9h0b28u08jt8c0bg8pmo84k.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
