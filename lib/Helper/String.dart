@@ -131,6 +131,7 @@ const String USERDATA = 'user_data';
 const String DATE_ADDED = 'date_added';
 const String ORDER_ITEMS = 'order_items';
 const String TOP_RETAED = 'top_rated_product';
+const String FILTER_DATE = 'filter_date';
 const String WALLET = 'wallet';
 const String CREDIT = 'credit';
 const String REV_IMG = 'review_images';

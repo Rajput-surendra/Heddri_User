@@ -204,6 +204,9 @@ class _LoginPageState extends State<Login> with TickerProviderStateMixin {
       CUR_USEREMAIL = email;
       // CUR_USERNAME = username;
       prefs.setString('uid', id.toString());
+      prefs.setString('user_name', username.toString());
+      prefs.setString('user_email', email.toString());
+      print('____ZXczczxczx______${email}_________');
       UserProvider userProvider =
           Provider.of<UserProvider>(this.context, listen: false);
       userProvider.setName(username ?? "");

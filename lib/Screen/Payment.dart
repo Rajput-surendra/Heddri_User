@@ -202,6 +202,8 @@ class StatePayment extends State<Payment> with TickerProviderStateMixin {
 
   TimeSlotModel? timeSlotModel;
 
+  DateTime currentTime = DateTime.now();
+
   getTimeSlot(String Sdate)async{
     print("working here ${Sdate}");
     var headers = {
@@ -226,302 +228,305 @@ class StatePayment extends State<Payment> with TickerProviderStateMixin {
   }
 
 
+
+
   @override
   Widget build(BuildContext context) {
 
-    return Scaffold(
-      key: _scaffoldKey,
-      appBar: getSimpleAppBar(getTranslated(context, 'PAYMENT_METHOD_LBL')!,
-          context), // getAppBar(getTranslated(context, 'PAYMENT_METHOD_LBL')!, context),
-      body: _isNetworkAvail
-          ? _isLoading
-              ? getProgress()
-              : Padding(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 10.0, vertical: 5),
-                  child: Column(
-                    children: [
-                      Expanded(
-                        child: SingleChildScrollView(
-                          child: Column(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Consumer<UserProvider>(
-                                  builder: (context, userProvider, _) {
-                                return Card(
-                                  elevation: 0,
-                                  child: userProvider.curBalance != "0" &&
-                                          userProvider.curBalance.isNotEmpty &&
-                                          userProvider.curBalance != ""
-                                      ? Padding(
-                                          padding: const EdgeInsets.symmetric(
-                                              horizontal: 8.0),
-                                          child: CheckboxListTile(
-                                            dense: true,
-                                            contentPadding: EdgeInsets.all(0),
-                                            value: isUseWallet,
-                                            onChanged: (bool? value) {
-                                              if (mounted)
-                                                setState(() {
-                                                  isUseWallet = value;
-                                                  if (value!) {
-                                                    if (totalPrice <=
-                                                        double.parse(
-                                                            userProvider
-                                                                .curBalance)) {
-                                                      remWalBal = (double.parse(
+    return SafeArea(
+      bottom: true,
+      top: false,
+      child: Scaffold(
+        key: _scaffoldKey,
+        appBar: getSimpleAppBar(getTranslated(context, 'PAYMENT_METHOD_LBL')!,
+            context), // getAppBar(getTranslated(context, 'PAYMENT_METHOD_LBL')!, context),
+        body: _isNetworkAvail
+            ? _isLoading
+                ? getProgress()
+                : Padding(
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 10.0, vertical: 5),
+                    child: Column(
+                      children: [
+                        Expanded(
+                          child: SingleChildScrollView(
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Consumer<UserProvider>(
+                                    builder: (context, userProvider, _) {
+                                  return Card(
+                                    elevation: 0,
+                                    child: userProvider.curBalance != "0" &&
+                                            userProvider.curBalance.isNotEmpty &&
+                                            userProvider.curBalance != ""
+                                        ? Padding(
+                                            padding: const EdgeInsets.symmetric(
+                                                horizontal: 8.0),
+                                            child: CheckboxListTile(
+                                              dense: true,
+                                              contentPadding: EdgeInsets.all(0),
+                                              value: isUseWallet,
+                                              onChanged: (bool? value) {
+                                                if (mounted)
+                                                  setState(() {
+                                                    isUseWallet = value;
+                                                    if (value!) {
+                                                      if (totalPrice <=
+                                                          double.parse(
                                                               userProvider
-                                                                  .curBalance) -
-                                                          totalPrice);
-                                                      usedBal = totalPrice;
-                                                      payMethod = "Wallet";
+                                                                  .curBalance)) {
+                                                        remWalBal = (double.parse(
+                                                                userProvider
+                                                                    .curBalance) -
+                                                            totalPrice);
+                                                        usedBal = totalPrice;
+                                                        payMethod = "Wallet";
 
-                                                      isPayLayShow = false;
+                                                        isPayLayShow = false;
+                                                      } else {
+                                                        remWalBal = 0;
+                                                        usedBal = double.parse(
+                                                            userProvider
+                                                                .curBalance);
+                                                        isPayLayShow = true;
+                                                      }
+
+                                                      totalPrice =
+                                                          totalPrice - usedBal;
                                                     } else {
-                                                      remWalBal = 0;
-                                                      usedBal = double.parse(
+                                                      totalPrice =
+                                                          totalPrice + usedBal;
+                                                      remWalBal = double.parse(
                                                           userProvider
                                                               .curBalance);
+                                                      payMethod = null;
+                                                      selectedMethod = null;
+                                                      usedBal = 0;
                                                       isPayLayShow = true;
                                                     }
 
-                                                    totalPrice =
-                                                        totalPrice - usedBal;
-                                                  } else {
-                                                    totalPrice =
-                                                        totalPrice + usedBal;
-                                                    remWalBal = double.parse(
-                                                        userProvider
-                                                            .curBalance);
-                                                    payMethod = null;
-                                                    selectedMethod = null;
-                                                    usedBal = 0;
-                                                    isPayLayShow = true;
-                                                  }
-
-                                                  widget.update();
-                                                });
-                                            },
-                                            title: Text(
-                                              getTranslated(
-                                                  context, 'USE_WALLET')!,
-                                              style: Theme.of(context)
-                                                  .textTheme
-                                                  .subtitle1,
-                                            ),
-                                            subtitle: Padding(
-                                              padding:
-                                                  const EdgeInsets.symmetric(
-                                                      vertical: 8.0),
-                                              child: Text(
-                                                isUseWallet!
-                                                    ? getTranslated(context,
-                                                            'REMAIN_BAL')! +
-                                                        " : " +
-                                                        CUR_CURRENCY! +
-                                                        " " +
-                                                        remWalBal
-                                                            .toStringAsFixed(2)
-                                                    : getTranslated(context,
-                                                            'TOTAL_BAL')! +
-                                                        " : " +
-                                                        CUR_CURRENCY! +
-                                                        " " +
-                                                        double.parse(
-                                                                userProvider
-                                                                    .curBalance)
-                                                            .toStringAsFixed(2),
-                                                style: TextStyle(
-                                                    fontSize: 15,
-                                                    color: Theme.of(context)
-                                                        .colorScheme
-                                                        .black),
-                                              ),
-                                            ),
-                                          ),
-                                        )
-                                      : Container(),
-                                );
-                              }),
-                              isTimeSlot!
-                                  ? Card(
-                                      elevation: 0,
-                                      child: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        mainAxisSize: MainAxisSize.min,
-                                        children: [
-                                          Padding(
-                                            padding: const EdgeInsets.all(8.0),
-                                            child: Text(
-                                              getTranslated(
-                                                  context, 'PREFERED_TIME')!,
-                                              style: TextStyle(
-                                                color: Theme.of(context)
-                                                    .colorScheme
-                                                    .fontColor,
-                                                fontWeight: FontWeight.bold,
-                                                fontSize: 16,
-                                              ),
-                                            ),
-                                          ),
-                                          Divider(),
-                                          Container(
-                                            height: 90,
-                                            padding: EdgeInsets.symmetric(
-                                                horizontal: 10),
-                                            child: ListView.builder(
-                                                shrinkWrap: true,
-                                                scrollDirection:
-                                                    Axis.horizontal,
-                                                itemCount: int.parse(allowDay!),
-                                                itemBuilder: (context, index) {
-                                                  print("ooooo ${index} and ${catname}");
-                                                  if(catname == "Parcel Counter"){
-                                                    return dateCell(index + 1);
-                                                  }
-                                                  else{
-                                                    return dateCell(index);
-                                                  }
-
-                                                }),
-                                          ),
-                                          Divider(),
-                                          // ListView.builder(
-                                          //     shrinkWrap: true,
-                                          //     physics:
-                                          //         NeverScrollableScrollPhysics(),
-                                          //     itemCount: timeModel.length,
-                                          //     itemBuilder: (context, index) {
-                                          //       return timeSlotItem(index);
-                                          //     })
-                              timeSlotModel == null ?  SizedBox.shrink()  :  ListView.builder(
-                                              itemCount: timeSlotModel!.data!.length,
-                                              shrinkWrap: true,
-                                              itemBuilder:(c,i){
-                                                print("time slot data here ${timeSlotModel!.data![i].title} and ${timeSlotModel!.data![i].fromTime} and ${timeSlotModel!.data![i].toTime} ");
-                                            return InkWell(
-                                              onTap: (){
-                                                DateTime dateTime = DateTime.now();
-                                                int currentTime =  dateTime.hour;
-                                                List preTime = timeSlotModel!.data![i].toTime!.split(" ");
-                                                  print("sss ${preTime[0]}");
-                                                  var finTime = preTime[0].toString().split(":");
-                                                  print("ssssssds ${finTime} and ${finTime[0]}");
-                                                  int finalTime = int.parse(finTime[0]);
-                                                print("cccccccccccccccccccccccc ${finalTime} and ${currentTime}");
-                                                // int expreTime = preTime.hour;
-                                                // print("final exp Time here ${expreTime}");
-                                                if(finalTime< currentTime){
-                                                  Fluttertoast.showToast(msg: "Delivery TIme expired\n Can't order to this time");
-                                                }
-                                                else{
-                                                  setState(() {
-                                                    selTime = timeSlotModel!.data![i].title.toString();
-                                                    currentIndex = i;
+                                                    widget.update();
                                                   });
-                                                }
-
-                                                print("sel time here ${selTime} and  ${currentIndex}");
                                               },
-                                              child: Container(
-                                                margin: EdgeInsets.only(bottom: 6,left: 10),
-                                                child: Row(
-                                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                                  children: [
-                                                    Container(
-                                                      height:20,
-                                                      width: 20,
-                                                      decoration:BoxDecoration(
-                                                        color: currentIndex == i  ? Colors.orange : Colors.transparent,
-                                                        borderRadius: BorderRadius.circular(100),
-                                                        border: Border.all(color: Colors.deepOrangeAccent)
-                                                      ),
-                                                    ),SizedBox(width: 10,),
-                                                    Text("${timeSlotModel!.data![i].title}"),
-                                                  ],
+                                              title: Text(
+                                                getTranslated(
+                                                    context, 'USE_WALLET')!,
+                                                style: Theme.of(context)
+                                                    .textTheme
+                                                    .subtitle1,
+                                              ),
+                                              subtitle: Padding(
+                                                padding:
+                                                    const EdgeInsets.symmetric(
+                                                        vertical: 8.0),
+                                                child: Text(
+                                                  isUseWallet!
+                                                      ? getTranslated(context,
+                                                              'REMAIN_BAL')! +
+                                                          " : " +
+                                                          CUR_CURRENCY! +
+                                                          " " +
+                                                          remWalBal
+                                                              .toStringAsFixed(2)
+                                                      : getTranslated(context,
+                                                              'TOTAL_BAL')! +
+                                                          " : " +
+                                                          CUR_CURRENCY! +
+                                                          " " +
+                                                          double.parse(
+                                                                  userProvider
+                                                                      .curBalance)
+                                                              .toStringAsFixed(2),
+                                                  style: TextStyle(
+                                                      fontSize: 15,
+                                                      color: Theme.of(context)
+                                                          .colorScheme
+                                                          .black),
                                                 ),
                                               ),
-                                            );
-                                          }),
-                                        ],
-                                      ),
-                                    )
-                                  : Container(),
-                              isPayLayShow!
-                                  ? Card(
-                                      elevation: 0,
-                                      child: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        mainAxisSize: MainAxisSize.min,
-                                        children: [
-                                          Padding(
-                                            padding: const EdgeInsets.all(8.0),
-                                            child: Text(
-                                              getTranslated(
-                                                  context, 'SELECT_PAYMENT')!,
-                                              style: TextStyle(
-                                                color: Theme.of(context)
-                                                    .colorScheme
-                                                    .fontColor,
-                                                fontWeight: FontWeight.bold,
-                                                fontSize: 16,
+                                            ),
+                                          )
+                                        : Container(),
+                                  );
+                                }),
+                                isTimeSlot!
+                                    ? Card(
+                                        elevation: 0,
+                                        child: Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          mainAxisSize: MainAxisSize.min,
+                                          children: [
+                                            Padding(
+                                              padding: const EdgeInsets.all(8.0),
+                                              child: Text(
+                                                getTranslated(
+                                                    context, 'PREFERED_TIME')!,
+                                                style: TextStyle(
+                                                  color: Theme.of(context)
+                                                      .colorScheme
+                                                      .fontColor,
+                                                  fontWeight: FontWeight.bold,
+                                                  fontSize: 16,
+                                                ),
                                               ),
                                             ),
-                                          ),
-                                          Divider(),
-                                          ListView.builder(
-                                              shrinkWrap: true,
-                                              physics:
-                                                  NeverScrollableScrollPhysics(),
-                                              itemCount:
-                                                  paymentMethodList.length,
-                                              itemBuilder: (context, index) {
-                                                if (index == 1 && cod)
-                                                  return paymentItem(index);
-                                                else if (index == 2 && paypal)
-                                                  return paymentItem(index);
-                                                else if (index == 3 && paumoney)
-                                                  return paymentItem(index);
-                                                else if (index == 4 && razorpay)
-                                                  return paymentItem(index);
-                                                else if (index == 5 && paystack)
-                                                  return paymentItem(index);
-                                                else if (index == 6 &&
-                                                    flutterwave)
-                                                  return paymentItem(index);
-                                                else if (index == 7 && stripe)
-                                                  return paymentItem(index);
-                                                else if (index == 8 && paytm)
-                                                  return paymentItem(index);
-                                                else if (index == 0 && gpay)
-                                                  return paymentItem(index);
-                                                else if (index == 9 &&
-                                                    bankTransfer)
-                                                  return paymentItem(index);
-                                                else
-                                                  return Container();
-                                              }),
-                                        ],
-                                      ),
-                                    )
-                                  : Container()
-                            ],
+                                            Divider(),
+                                            Container(
+                                              height: 90,
+                                              padding: EdgeInsets.symmetric(
+                                                  horizontal: 10),
+                                              child: ListView.builder(
+                                                  shrinkWrap: true,
+                                                  scrollDirection:
+                                                      Axis.horizontal,
+                                                  itemCount: int.parse(allowDay!),
+                                                  itemBuilder: (context, index) {
+                                                    print("ooooo ${index} and ${catname}");
+                                                    if(catname == "Parcel Counter"){
+                                                      return dateCell(index + 1);
+                                                    }
+                                                    else{
+                                                      return dateCell(index);
+                                                    }
+
+                                                  }),
+                                            ),
+                                            Divider(),
+                                            // ListView.builder(
+                                            //     shrinkWrap: true,
+                                            //     physics:
+                                            //         NeverScrollableScrollPhysics(),
+                                            //     itemCount: timeModel.length,
+                                            //     itemBuilder: (context, index) {
+                                            //       return timeSlotItem(index);
+                                            //     })
+                                timeSlotModel == null ? SizedBox.shrink():ListView.builder(
+                                                itemCount: timeSlotModel!.data!.length,
+                                                shrinkWrap: true,
+                                                itemBuilder:(c,i){
+                                                  print("time slot data here ${timeSlotModel!.data![i].title} and ${timeSlotModel!.data![i].fromTime} and ${timeSlotModel!.data![i].toTime} ");
+                                              return InkWell(
+                                                onTap: (){
+                                                  DateTime dateTime = DateTime.now();
+                                                  int currentTime =  dateTime.hour;
+                                                  List preTime = timeSlotModel!.data![i].toTime!.split(" ");
+                                                    var finTime = preTime[0].toString().split(":");
+                                                    int finalTime = int.parse(finTime[0]);
+                                                  if(finalTime< currentTime){
+                                                    Fluttertoast.showToast(msg: "Delivery TIme expired\n Can't order to this time");
+                                                  }
+                                                  else{
+                                                    setState(() {
+                                                      selTime = timeSlotModel!.data![i].title.toString();
+                                                      startTime = timeSlotModel!.data![i].fromTime.toString();
+                                                      endTime = timeSlotModel!.data![i].toTime.toString();
+                                                      currentIndex = i;
+                                                    });
+                                                  }
+
+                                                  print("sel time here ${selTime} and  ${currentIndex}");
+                                                },
+                                                child: Container(
+                                                  margin: EdgeInsets.only(bottom: 6,left: 10),
+                                                  child: Row(
+                                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                                    children: [
+                                                      Container(
+                                                        height:20,
+                                                        width: 20,
+                                                        decoration:BoxDecoration(
+                                                          color: currentIndex == i  ? colors.primary : Colors.transparent,
+                                                          borderRadius: BorderRadius.circular(100),
+                                                          border: Border.all(color: Colors.orange)
+                                                        ),
+                                                      ),SizedBox(width: 10,),
+                                                      Text("${timeSlotModel!.data![i].title}"),
+                                                    ],
+                                                  ),
+                                                ),
+                                              );
+                                            }),
+                                          ],
+                                        ),
+                                      )
+                                    : Container(),
+                                isPayLayShow!
+                                    ? Card(
+                                        elevation: 0,
+                                        child: Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          mainAxisSize: MainAxisSize.min,
+                                          children: [
+                                            Padding(
+                                              padding: const EdgeInsets.all(8.0),
+                                              child: Text(
+                                                getTranslated(
+                                                    context, 'SELECT_PAYMENT')!,
+                                                style: TextStyle(
+                                                  color: Theme.of(context)
+                                                      .colorScheme
+                                                      .fontColor,
+                                                  fontWeight: FontWeight.bold,
+                                                  fontSize: 16,
+                                                ),
+                                              ),
+                                            ),
+                                            Divider(),
+                                            ListView.builder(
+                                                shrinkWrap: true,
+                                                physics:
+                                                    NeverScrollableScrollPhysics(),
+                                                itemCount:
+                                                    paymentMethodList.length,
+                                                itemBuilder: (context, index) {
+                                                  if (index == 1 && cod)
+                                                    return paymentItem(index);
+                                                  else if (index == 2 && paypal)
+                                                    return paymentItem(index);
+                                                  else if (index == 3 && paumoney)
+                                                    return paymentItem(index);
+                                                  else if (index == 4 && razorpay)
+                                                    return paymentItem(index);
+                                                  else if (index == 5 && paystack)
+                                                    return paymentItem(index);
+                                                  else if (index == 6 &&
+                                                      flutterwave)
+                                                    return paymentItem(index);
+                                                  else if (index == 7 && stripe)
+                                                    return paymentItem(index);
+                                                  else if (index == 8 && paytm)
+                                                    return paymentItem(index);
+                                                  else if (index == 0 && gpay)
+                                                    return paymentItem(index);
+                                                  else if (index == 9 &&
+                                                      bankTransfer)
+                                                    return paymentItem(index);
+                                                  else
+                                                    return Container();
+                                                }),
+                                          ],
+                                        ),
+                                      )
+                                    : Container()
+                              ],
+                            ),
                           ),
                         ),
-                      ),
-                      SimBtn(
-                        size: 0.8,
-                        title: getTranslated(context, 'DONE'),
-                        onBtnSelected: () {
-                          Navigator.pop(context);
-                        },
-                      ),
-                    ],
-                  ),
-                )
-          : noInternet(context),
+                        SimBtn(
+                          size: 0.8,
+                          title: getTranslated(context, 'DONE'),
+                          onBtnSelected: () {
+                            Navigator.pop(context);
+                          },
+                        ),
+                      ],
+                    ),
+                  )
+            : noInternet(context),
+      ),
     );
   }
 
@@ -756,32 +761,6 @@ String? startFrom;
       }
     }
 
-  }
-
-  Widget timeSlotItem(int index) {
-    return  DateTime.now().hour>=21&&selectedDate==0&&timeModel[index].name!.toLowerCase().contains("morning")?SizedBox():InkWell(
-      onTap: () {
-        // DateTime dt1 =  DateTime.parse(NewTime.toString());
-        // print("chekcing time here ${NewTime}");
-        // print("  okkkk ${timeModel[selectedTime!].name}");
-        //     List data1 = timeModel[selectedTime!].name!.split(" ");
-        //     print("dd ${data1}");
-        //     List data2 = data1[1].toString().split("-");
-        //     print("dd1 ${data2}");
-        if (mounted)
-          setState(() {
-            //if(NewTime.)
-            selectedTime = index;
-            selTime = timeModel[selectedTime!].name;
-            print("selected time now ${selTime}");
-            //timeSlotList[selectedTime].name;
-            timeModel.forEach((element) => element.isSelected = false);
-            timeModel[index].isSelected = true;
-           // if(NewDate)
-          });
-      },
-      child: RadioItem(timeModel[index]),
-    );
   }
 
   Widget paymentItem(int index) {

@@ -12,6 +12,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_paystack/flutter_paystack.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:http/http.dart';
+import 'package:intl/intl.dart';
 import 'package:paytm/paytm.dart';
 import 'package:provider/provider.dart';
 import 'package:razorpay_flutter/razorpay_flutter.dart';
@@ -44,7 +45,7 @@ List<User> addressList = [];
 List<Promo> promoList = [];
 double totalPrice = 0, oriPrice = 0, delCharge = 0, taxPer = 0;
 int? selectedAddress = 0;
-String? selAddress, payMethod = '', selTime, selDate, promocode;
+String? selAddress, payMethod = '', selTime, selDate, promocode, startTime, endTime;
 bool? isTimeSlot,
     isPromoValid = false,
     isUseWallet = false,
@@ -102,7 +103,7 @@ class StateCart extends State<Cart> with TickerProviderStateMixin {
   bool saveLater = false, addCart = false;
   String? ordertype;
   String? finalResult;
-
+  DateTime currentTime = DateTime.now();
   //List<PaymentItem> _gpaytItems = [];
   //Pay _gpayClient;
 
@@ -2836,11 +2837,13 @@ class StateCart extends State<Cart> with TickerProviderStateMixin {
 
       checkoutState!(() {});
       var options = {
-        KEY: razorpayId,
+        // KEY: razorpayId,
+        KEY: "rzp_test_2Nsm4ZGj6heV50",
         AMOUNT: amt,
         NAME: settingsProvider.userName,
         'prefill': {CONTACT: contact, EMAIL: email},
       };
+      print('____cscscscscscscccsdcsscscsc______${amt}_________');
 
       try {
         _razorpay!.open(options);
@@ -3908,9 +3911,39 @@ class StateCart extends State<Cart> with TickerProviderStateMixin {
                                 fontSize: 15,
                                 fontWeight: FontWeight.bold)),
                         onPressed: () {
-                          Navigator.pop(context);
+                          final currentTime = DateTime.now();
+                          final startObj = startTime;
+                          final endObj = endTime; // Replace with your desired time in 'HH:mm' format
 
-                          doPayment();
+                          final timeFormat = DateFormat.Hm();
+                          final startTime1 = timeFormat.parse(startObj!);
+                          final endTime1 = timeFormat.parse(endObj!);
+
+                          final finalStartTime = DateTime(
+                            currentTime.year,
+                            currentTime.month,
+                            currentTime.day,
+                            startTime1.hour,
+                            startTime1.minute,
+                          );
+
+                          final finalEndTime = DateTime(
+                            currentTime.year,
+                            currentTime.month,
+                            currentTime.day,
+                            endTime1.hour,
+                            endTime1.minute,
+                          );
+
+
+                          bool isBetween = currentTime.isAfter(finalStartTime) && currentTime.isBefore(finalEndTime);
+                          print('____sdfsfsdfsdfdsf______${isBetween}_______${finalStartTime}_ ${finalEndTime}_');
+                          if(isBetween) {
+                            doPayment();
+                          }else{
+                            setSnackbar("Delivery not available for selected time slot", _checkscaffoldKey);
+                          }
+                          Navigator.pop(context);
                         })
                   ],
                 )),

@@ -477,7 +477,7 @@ class _HomePageState extends State<HomePage>
                   children: <Widget>[
                     // _getHeading(sectionList[index].title ?? "", index),
                     // _getSection(index)
-                    _getHeading(sectionList[index].title ?? "", index),
+                   // _getHeading(sectionList[index].title ?? "", index),
 
                     sectionList[index].title == "Today Offer" ?
                     _getSection(index): SizedBox(),
@@ -508,7 +508,9 @@ class _HomePageState extends State<HomePage>
                   ],
                 ),
               ),
-              offerImages.length > index ? _getOfferImage(index) : Container(),
+              offerImages.length > index ?
+              _getOfferImage(index)
+                  : Container(),
             ],
           )
         : Container();
@@ -661,8 +663,10 @@ class _HomePageState extends State<HomePage>
   _getSection(int i) {
     var orient = MediaQuery.of(context).orientation;
 
-    return sectionList[i].style == DEFAULT
-        ? Padding(
+    return
+      sectionList[i].style == DEFAULT
+        ?
+    Padding(
             padding: const EdgeInsets.all(15.0),
             child: GridView.count(
               // mainAxisSpacing: 12,
@@ -695,9 +699,11 @@ class _HomePageState extends State<HomePage>
               ),
             ),
           )
+
         : sectionList[i].style == STYLE1
             ? sectionList[i].productList!.length > 0
-                ? Padding(
+                ?
+                       Padding(
                     padding: const EdgeInsets.all(15.0),
                     child: Row(
                       children: [
@@ -802,7 +808,8 @@ class _HomePageState extends State<HomePage>
                             ),
                           ],
                         ))
-                    : sectionList[i].style == STYLE4 ? Padding(
+                    : sectionList[i].style == STYLE4 ?
+    Padding(
       padding: const EdgeInsets.all(15.0),
       child: GridView.count(
         // mainAxisSpacing: 12,
@@ -1587,8 +1594,8 @@ class _HomePageState extends State<HomePage>
     apiBaseHelper.postAPICall(getSectionApi, parameter).then((getdata) {
       bool error = getdata["error"];
       String? msg = getdata["message"];
-      print(getSecondBannerApi);
-      print(parameter.toString());
+      print("AAAAAAAAAAAAAAAAAAAAAAAAAAAAA${getSectionApi}");
+      print("pppppppppppppppppppppppppppppp${parameter.toString()}");
       sectionList.clear();
       if (!error) {
         var data = getdata["data"];

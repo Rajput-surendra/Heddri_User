@@ -14,7 +14,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:tuple/tuple.dart';
 import '../Helper/Color.dart';
@@ -115,6 +117,48 @@ class StateProduct extends State<ProductList> with TickerProviderStateMixin {
           });
       }
     }
+  }
+  TextEditingController dateController =  TextEditingController();
+  String _dateValue = '';
+  var dateFormate;
+  String convertDateTimeDisplay(String date) {
+    final DateFormat displayFormater = DateFormat('yyyy-MM-dd HH:mm:ss.SSS');
+    final DateFormat serverFormater = DateFormat('yyyy-MM-dd');
+    final DateTime displayDate = displayFormater.parse(date);
+    final String formatted = serverFormater.format(displayDate);
+    return formatted;
+  }
+  Future _selectDateStart() async {
+    DateTime? picked = await showDatePicker(
+        context: context,
+        initialDate:  DateTime.now(),
+        firstDate: DateTime.now(),
+        lastDate: DateTime(2025),
+        //firstDate: DateTime.now().subtract(Duration(days: 1)),
+        // lastDate: new DateTime(2022),
+        builder: (BuildContext context, Widget? child) {
+          return Theme(
+            data: ThemeData.light().copyWith(
+                primaryColor: colors.primary,
+                accentColor: Colors.black,
+                colorScheme:  ColorScheme.light(primary:  colors.primary),
+                // ColorScheme.light(primary: const Color(0xFFEB6C67)),
+                buttonTheme:
+                ButtonThemeData(textTheme: ButtonTextTheme.accent)),
+            child: child!,
+          );
+        });
+    if (picked != null)
+      setState(() {
+        String yourDate = picked.toString();
+        _dateValue = convertDateTimeDisplay(yourDate);
+        print(_dateValue);
+        dateFormate = DateFormat("yyyy/MM/dd").format(DateTime.parse(_dateValue ?? ""));
+        // dateController = TextEditingController(text: _dateValue);
+
+
+      });
+    getProduct("0");
   }
 
   @override
@@ -1155,7 +1199,11 @@ class StateProduct extends State<ProductList> with TickerProviderStateMixin {
       LIMIT: perPage.toString(),
       OFFSET: offset.toString(),
       TOP_RETAED: top,
+      FILTER_DATE: _dateValue.toString()
+
+
     };
+    print('___hjjghjghjh_______${parameter}_________');
     if (selId != null && selId != "") {
       parameter[ATTRIBUTE_VALUE_ID] = selId;
     }
@@ -2412,6 +2460,12 @@ class StateProduct extends State<ProductList> with TickerProviderStateMixin {
                   : null;
             },
           ),
+
+          InkWell(
+              onTap: (){
+                _selectDateStart();
+              },
+              child: _dateValue.isEmpty ? Icon(Icons.calendar_month): Text("${_dateValue}",style: TextStyle(color: colors.primary,fontWeight: FontWeight.bold),))
         ],
       ),
     );

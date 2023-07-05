@@ -13,6 +13,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:http/http.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../Helper/AppBtn.dart';
 import '../Helper/Color.dart';
 import '../Helper/Constant.dart';
@@ -169,6 +170,7 @@ class _SignUpPageState extends State<SignUp> with TickerProviderStateMixin {
   }
 
   Future<void> getRegisterUser() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
     try {
       var data = {
         MOBILE: mobile,
@@ -198,8 +200,9 @@ class _SignUpPageState extends State<SignUp> with TickerProviderStateMixin {
         mobile = i[MOBILE];
         //countrycode=i[COUNTRY_CODE];
         CUR_USERID = id;
-
-        // CUR_USERNAME = name;
+        CUR_USERNAME = name;
+        prefs.setString('user_name', name.toString());
+        prefs.setString('user_email', email.toString());
 
         UserProvider userProvider = context.read<UserProvider>();
         userProvider.setName(name ?? "");
@@ -207,7 +210,6 @@ class _SignUpPageState extends State<SignUp> with TickerProviderStateMixin {
         SettingProvider settingProvider = context.read<SettingProvider>();
         settingProvider.saveUserDetail(id!, name, email, mobile, city, area,
             address, pincode, latitude, longitude, "", context);
-
         Navigator.pushNamedAndRemoveUntil(context, "/home", (r) => false);
       } else {
         setSnackbar(msg!);
