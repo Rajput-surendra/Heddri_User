@@ -65,7 +65,10 @@ String? razorpayId;
 
   TextEditingController startDateController =  TextEditingController();
   TextEditingController endDateController =  TextEditingController();
+  TextEditingController startCustomDateController =  TextEditingController();
+  TextEditingController endCustomDateController =  TextEditingController();
   TextEditingController dayController =  TextEditingController();
+  TextEditingController customdayController =  TextEditingController();
   TextEditingController addressController =  TextEditingController();
 
   int? days ;
@@ -117,6 +120,44 @@ String? razorpayId;
         lastDAte = (picked.add(Duration(days: days ?? numberOfDays)));
         print('____last date of staart date______${lastDAte}_________');
         endDateController = TextEditingController(text: DateFormat("yyyy/MM/dd").format(DateTime.parse(lastDAte.toString())));
+      });
+  }
+  Future _selectCustomDateStart() async {
+    DateTime? picked = await showDatePicker(
+        context: context,
+        initialDate:  DateTime.now(),
+        firstDate: DateTime.now(),
+        lastDate: DateTime(2025),
+
+        //firstDate: DateTime.now().subtract(Duration(days: 1)),
+        // lastDate: new DateTime(2022),
+        builder: (BuildContext context, Widget? child) {
+          return Theme(
+            data: ThemeData.light().copyWith(
+                primaryColor: colors.primary,
+                accentColor: Colors.black,
+                colorScheme:  ColorScheme.light(primary:  colors.primary),
+                // ColorScheme.light(primary: const Color(0xFFEB6C67)),
+                buttonTheme:
+                ButtonThemeData(textTheme: ButtonTextTheme.accent)),
+            child: child!,
+          );
+        });
+    if (picked != null)
+      setState(() {
+        String yourDate = picked.toString();
+        _dateValue = convertDateTimeDisplay(yourDate);
+        print("here start date${_dateValue}");
+        final startDate = DateTime.now(); // Replace with your desired start date
+        final numberOfDays = int.parse(customdayController.text);
+        DateTime lastDAte = startDate.add(Duration(days: numberOfDays));
+        print('number of days ====?${numberOfDays}_________');
+        dateFormate = DateFormat("yyyy/MM/dd").format(DateTime.parse(_dateValue ?? ""));
+        startCustomDateController = TextEditingController(text: _dateValue);
+        print('__________${picked}_________');
+        lastDAte = (picked.add(Duration(days: days ?? numberOfDays)));
+        print('____last date of staart date______${lastDAte}_________');
+        endCustomDateController = TextEditingController(text: DateFormat("yyyy/MM/dd").format(DateTime.parse(lastDAte.toString())));
       });
   }
   @override
@@ -217,7 +258,6 @@ String? razorpayId;
   String? UName,UEmail;
   List<String> newdates = [];
   purchasePlan(String type)async{
-
     SharedPreferences prefs = await SharedPreferences.getInstance();
     UName = prefs.getString('user_name');
     UEmail = prefs.getString('user_email');
@@ -712,7 +752,7 @@ String? razorpayId;
               ),
               child: TextFormField(
                 keyboardType: TextInputType.number,
-                controller: dayController,
+                controller: customdayController,
                 decoration: InputDecoration(
 
                     counterText: "",
@@ -741,10 +781,10 @@ String? razorpayId;
                             if(dayController.text.isEmpty){
                              Fluttertoast.showToast(msg: "Please Select Days",backgroundColor: colors.primary);
                             }else {
-                              _selectDateStart();
+                              _selectCustomDateStart();
                             }
                           },
-                          controller:startDateController,
+                          controller:startCustomDateController,
                           decoration: InputDecoration(
                               border: InputBorder.none,
                               counterText: "",
@@ -774,7 +814,7 @@ String? razorpayId;
                         elevation: 5,
                         child: TextFormField(
                           readOnly: true,
-                          controller:endDateController,
+                          controller:endCustomDateController,
                           decoration: InputDecoration(
                               border: InputBorder.none,
                               counterText: "",
@@ -927,19 +967,25 @@ String? razorpayId;
                           padding: const EdgeInsets.all(20),
                           child: InkWell(
                             onTap: () {
-                              setState(() {
-                                id = getMemberShipPlanModel!.data![index].id.toString();
-                                price = getMemberShipPlanModel!.data![index].price.toString();
-                                type = getMemberShipPlanModel!.data![index].planType.toString();
-                                name = getMemberShipPlanModel!.data![index].plan.toString();
-                              });
-                              print("checking detail here ${id} and ${price} and ${type} and ${name}");
+                              if(dayController.text.isEmpty){
+                                Fluttertoast.showToast(msg: "please select days");
+                              }
+                              else{
+                              // setState(() {
+                              //   id = getMemberShipPlanModel!.data![index].id.toString();
+                              //   price = getMemberShipPlanModel!.data![index].price.toString();
+                              //   type = getMemberShipPlanModel!.data![index].planType.toString();
+                              //   name = getMemberShipPlanModel!.data![index].plan.toString();
+                              // });
+                              // print("checking detail here ${id} and ${price} and ${type} and ${name}");
                               openCheckout(getMemberShipPlanModel!.data![index].price.toString());
                               //purchasePlan(getMemberShipPlanModel!.data![index].id.toString(),getMemberShipPlanModel!.data![index].price.toString(),getMemberShipPlanModel!.data![index].planType.toString(),getMemberShipPlanModel!.data![index].plan.toString());
                               // Navigator.push(context, MaterialPageRoute(builder: (context)=>
                               //     SubmitFromScreen(planId:getPlans!.data!.first.plans![index].id ,title: getPlans!.data!.first.plans![index].title,
                               //         amount: getPlans!.data!.first.plans![index].amount,days: getPlans!.data!.first.plans![index].timeText,Purchased: getPlans!.data!.first.plans![index].isPurchased )));
+                            }
                             },
+
                             child: Card(
                               shape: RoundedRectangleBorder(
                                   borderRadius:

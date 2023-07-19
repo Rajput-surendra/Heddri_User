@@ -1201,9 +1201,7 @@ class StateProduct extends State<ProductList> with TickerProviderStateMixin {
       TOP_RETAED: top,
       FILTER_DATE: _dateValue.toString()
 
-
     };
-    print('___hjjghjghjh_______${parameter}_________');
     if (selId != null && selId != "") {
       parameter[ATTRIBUTE_VALUE_ID] = selId;
     }
@@ -1212,7 +1210,6 @@ class StateProduct extends State<ProductList> with TickerProviderStateMixin {
       parameter["seller_id"] = widget.id!;
     } else {
       parameter[CATID] = widget.id ?? '';
-      print("Category Parameter ===========> ${parameter[CATID]}");
     }
     if (CUR_USERID != null) parameter[USER_ID] = CUR_USERID!;
     if (widget.dis != null) parameter[DISCOUNT] = widget.dis.toString();
