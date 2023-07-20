@@ -2770,7 +2770,7 @@ class StateCart extends State<Cart> with TickerProviderStateMixin {
             totalPrice = totalPrice + delCharge;
           } else {
             if (ISFLAT_DEL) {
-              if ((oriPrice) < double.parse(MIN_AMT!))
+              if ((oriPrice) < double.parse('0.0'/*MIN_AMT!*/))
                 delCharge = double.parse(CUR_DEL_CHR!);
               else
                 delCharge = 0;

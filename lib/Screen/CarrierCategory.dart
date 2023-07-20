@@ -27,12 +27,54 @@ class CarrierCategeory extends StatefulWidget {
 }
 
 class _CarrierCategeoryState extends State<CarrierCategeory> {
-
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    getSettingApiNew();
+    Future.delayed(Duration(milliseconds: 200),(){
+      return  getMemberShipPlanApi();
+    });
+    Future.delayed(Duration(milliseconds:300),(){
+      return _getdateTime();
+    });
+    razorpay.on(Razorpay.EVENT_PAYMENT_ERROR, handlePaymentErrorResponse);
+    razorpay.on(Razorpay.EVENT_PAYMENT_SUCCESS, handlePaymentSuccessResponse);
+    razorpay.on(Razorpay.EVENT_EXTERNAL_WALLET, handleExternalWalletSelected);
+  }
   Razorpay razorpay = Razorpay();
 
   String? id,price,type,name;
-String? razorpayId;
+   String? razorpayId;
+   String? fixedprice;
+    // double? doublefixedPrice = double.parse(fixedprice) ;
+    double? numberOfDays;
+double? totalPrice ;
 
+getSettingApiNew() async {
+  var headers = {
+    'Cookie': 'ci_session=509ea2c1eca7339ceab029bbb1e10667670c6e08'
+  };
+  var request = http.MultipartRequest('POST', Uri.parse('$baseUrl/get_settings'));
+  request.fields.addAll({
+    'user_id':CUR_USERID.toString(),
+    'type': ALL
+  });
+  print('______request.fields____${request.fields}_________');
+  request.headers.addAll(headers);
+  http.StreamedResponse response = await request.send();
+  if (response.statusCode == 200) {
+     var result = await response.stream.bytesToString();
+     var finalResult =  jsonDecode(result);
+     setState(() {
+       fixedprice = finalResult['data']['system_settings'][0]['plan_fix_price'];
+       print('__fixedpricefixedpricefixedprice________${fixedprice}_________');
+     });
+  }
+  else {
+  print(response.reasonPhrase);
+  }
+
+}
   Future<void> _getdateTime() async {
       dates.clear();
       SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -44,7 +86,7 @@ String? razorpayId;
         Response response =
         await post(getSettingApi, body: parameter, headers: headers)
             .timeout(Duration(seconds: timeOut));
-        print("pppp ${parameter}  and ${getSettingApi} ");
+        print("pppp3333333333333============> ${parameter}  and ${getSettingApi} ");
         if (response.statusCode == 200) {
           var getdata = json.decode(response.body);
           print(getdata);
@@ -54,6 +96,7 @@ String? razorpayId;
             var data = getdata["data"];
             var payment = data["payment_method"];
              razorpayId = payment["razorpay_key_id"];
+             print('___razorpayId_______${razorpayId}_________');
           } else {
             // setSnackbar(msg);
           }
@@ -62,15 +105,14 @@ String? razorpayId;
       } on TimeoutException catch (_) {
       }
     }
-
-  TextEditingController startDateController =  TextEditingController();
+  TextEditingController startReularDateController =  TextEditingController();
+  TextEditingController endReularDateController =  TextEditingController();
   TextEditingController endDateController =  TextEditingController();
   TextEditingController startCustomDateController =  TextEditingController();
   TextEditingController endCustomDateController =  TextEditingController();
   TextEditingController dayController =  TextEditingController();
   TextEditingController customdayController =  TextEditingController();
   TextEditingController addressController =  TextEditingController();
-
   int? days ;
   String _dateValue = '';
   DateTime? lastDAte;
@@ -81,17 +123,15 @@ String? razorpayId;
     final DateTime displayDate = displayFormater.parse(date);
     final String formatted = serverFormater.format(displayDate);
     return formatted;
-
-
   }
+
   Future _selectDateStart() async {
     DateTime? picked = await showDatePicker(
         context: context,
         initialDate:  DateTime.now(),
         firstDate: DateTime.now(),
         lastDate: DateTime(2025),
-
-    //firstDate: DateTime.now().subtract(Duration(days: 1)),
+        //firstDate: DateTime.now().subtract(Duration(days: 1)),
         // lastDate: new DateTime(2022),
         builder: (BuildContext context, Widget? child) {
           return Theme(
@@ -109,19 +149,82 @@ String? razorpayId;
       setState(() {
         String yourDate = picked.toString();
         _dateValue = convertDateTimeDisplay(yourDate);
-        print("here start date${_dateValue}");
-        final startDate = DateTime.now(); // Replace with your desired start date
-        final numberOfDays = int.parse(dayController.text);
-         DateTime lastDAte = startDate.add(Duration(days: numberOfDays));
-       print('number of days ====?${numberOfDays}_________');
+        print(_dateValue);
         dateFormate = DateFormat("yyyy/MM/dd").format(DateTime.parse(_dateValue ?? ""));
-        startDateController = TextEditingController(text: _dateValue);
-        print('__________${picked}_________');
-        lastDAte = (picked.add(Duration(days: days ?? numberOfDays)));
-        print('____last date of staart date______${lastDAte}_________');
-        endDateController = TextEditingController(text: DateFormat("yyyy/MM/dd").format(DateTime.parse(lastDAte.toString())));
+        startReularDateController = TextEditingController(text: _dateValue);
+
       });
+
   }
+  Future _selectDateEnd() async {
+    DateTime? picked = await showDatePicker(
+        context: context,
+        initialDate:  DateTime.now(),
+        firstDate: DateTime.now(),
+        lastDate: DateTime(2025),
+        //firstDate: DateTime.now().subtract(Duration(days: 1)),
+        // lastDate: new DateTime(2022),
+        builder: (BuildContext context, Widget? child) {
+          return Theme(
+            data: ThemeData.light().copyWith(
+                primaryColor: colors.primary,
+                accentColor: Colors.black,
+                colorScheme:  ColorScheme.light(primary:  colors.primary),
+                // ColorScheme.light(primary: const Color(0xFFEB6C67)),
+                buttonTheme:
+                ButtonThemeData(textTheme: ButtonTextTheme.accent)),
+            child: child!,
+          );
+        });
+    if (picked != null)
+      setState(() {
+        String yourDate = picked.toString();
+        _dateValue = convertDateTimeDisplay(yourDate);
+        print(_dateValue);
+        dateFormate = DateFormat("yyyy/MM/dd").format(DateTime.parse(_dateValue ?? ""));
+        endReularDateController = TextEditingController(text: _dateValue);
+
+      });
+
+  }
+  // Future _selectDateStart() async {
+  //   DateTime? picked = await showDatePicker(
+  //       context: context,
+  //       initialDate:  DateTime.now(),
+  //       firstDate: DateTime.now(),
+  //       lastDate: DateTime(2025),
+  //
+  //   //firstDate: DateTime.now().subtract(Duration(days: 1)),
+  //       // lastDate: new DateTime(2022),
+  //       builder: (BuildContext context, Widget? child) {
+  //         return Theme(
+  //           data: ThemeData.light().copyWith(
+  //               primaryColor: colors.primary,
+  //               accentColor: Colors.black,
+  //               colorScheme:  ColorScheme.light(primary:  colors.primary),
+  //               // ColorScheme.light(primary: const Color(0xFFEB6C67)),
+  //               buttonTheme:
+  //               ButtonThemeData(textTheme: ButtonTextTheme.accent)),
+  //           child: child!,
+  //         );
+  //       });
+  //   if (picked != null)
+  //     setState(() {
+  //       String yourDate = picked.toString();
+  //       _dateValue = convertDateTimeDisplay(yourDate);
+  //       print("here start date${_dateValue}");
+  //       final startDate = DateTime.now(); // Replace with your desired start date
+  //       final numberOfDays = int.parse(dayController.text);
+  //        DateTime lastDAte = startDate.add(Duration(days: numberOfDays));
+  //      print('number of days ====?${numberOfDays}_________');
+  //       dateFormate = DateFormat("yyyy/MM/dd").format(DateTime.parse(_dateValue ?? ""));
+  //       startDateController = TextEditingController(text: _dateValue);
+  //       print('__________${picked}_________');
+  //       lastDAte = (picked.add(Duration(days: days ?? numberOfDays)));
+  //       print('____last date of staart date______${lastDAte}_________');
+  //       endDateController = TextEditingController(text: DateFormat("yyyy/MM/dd").format(DateTime.parse(lastDAte.toString())));
+  //     });
+  // }
   Future _selectCustomDateStart() async {
     DateTime? picked = await showDatePicker(
         context: context,
@@ -147,33 +250,16 @@ String? razorpayId;
       setState(() {
         String yourDate = picked.toString();
         _dateValue = convertDateTimeDisplay(yourDate);
-        print("here start date${_dateValue}");
         final startDate = DateTime.now(); // Replace with your desired start date
-        final numberOfDays = int.parse(customdayController.text);
-        DateTime lastDAte = startDate.add(Duration(days: numberOfDays));
-        print('number of days ====?${numberOfDays}_________');
+         numberOfDays = double.parse(customdayController.text);
+        DateTime lastDAte = startDate.add(Duration(days: numberOfDays!.toInt()));
         dateFormate = DateFormat("yyyy/MM/dd").format(DateTime.parse(_dateValue ?? ""));
         startCustomDateController = TextEditingController(text: _dateValue);
-        print('__________${picked}_________');
-        lastDAte = (picked.add(Duration(days: days ?? numberOfDays)));
-        print('____last date of staart date______${lastDAte}_________');
+        lastDAte = (picked.add(Duration(days: days ?? numberOfDays!.toInt())));
         endCustomDateController = TextEditingController(text: DateFormat("yyyy/MM/dd").format(DateTime.parse(lastDAte.toString())));
       });
   }
   @override
-  void initState() {
-    // TODO: implement initState
-    super.initState();
-   Future.delayed(Duration(milliseconds: 200),(){
-     return  getMemberShipPlanApi();
-   });
-   Future.delayed(Duration(milliseconds:200),(){
-    return _getdateTime();
-   });
-    razorpay.on(Razorpay.EVENT_PAYMENT_ERROR, handlePaymentErrorResponse);
-    razorpay.on(Razorpay.EVENT_PAYMENT_SUCCESS, handlePaymentSuccessResponse);
-    razorpay.on(Razorpay.EVENT_EXTERNAL_WALLET, handleExternalWalletSelected);
-  }
   void handlePaymentErrorResponse(PaymentFailureResponse response){
     print("first one here");
   }
@@ -184,7 +270,6 @@ String? razorpayId;
   void handleExternalWalletSelected(ExternalWalletResponse response){
 
   }
-
   openCheckout(String amt) {
     // print("working check out thing${finalPrice}");
     double prices = double.parse(amt.toString());
@@ -426,23 +511,23 @@ String? razorpayId;
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Card(
-              elevation: 5,
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10)
-              ),
-              child: TextFormField(
-                keyboardType: TextInputType.number,
-                controller: dayController,
-                decoration: InputDecoration(
-
-                    counterText: "",
-                    contentPadding: EdgeInsets.only(left: 10),
-                    border: InputBorder.none,
-                    hintText: "Enter Days"
-                ),
-              ),
-            ),
+            // Card(
+            //   elevation: 5,
+            //   shape: RoundedRectangleBorder(
+            //       borderRadius: BorderRadius.circular(10)
+            //   ),
+            //   child: TextFormField(
+            //     keyboardType: TextInputType.number,
+            //     controller: dayController,
+            //     decoration: InputDecoration(
+            //
+            //         counterText: "",
+            //         contentPadding: EdgeInsets.only(left: 10),
+            //         border: InputBorder.none,
+            //         hintText: "Enter Days"
+            //     ),
+            //   ),
+            // ),
            Row(
              children: [
                Expanded(
@@ -459,13 +544,14 @@ String? razorpayId;
                        child: TextFormField(
                          readOnly: true,
                          onTap: (){
-                           if(dayController.text.isEmpty){
-                             Fluttertoast.showToast(msg: "Please Select Days",backgroundColor: colors.primary);
-                           }else {
-                             _selectDateStart();
-                           }
+                           _selectDateStart();
+                           // if(customdayController.text.isEmpty){
+                           //   Fluttertoast.showToast(msg: "Please Select Days",backgroundColor: colors.primary);
+                           // }else {
+                           //
+                           // }
                          },
-                         controller:startDateController,
+                         controller:startReularDateController,
                          decoration: InputDecoration(
                              border: InputBorder.none,
                              counterText: "",
@@ -494,8 +580,11 @@ String? razorpayId;
                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
                        elevation: 5,
                        child: TextFormField(
+                         onTap: (){
+                           _selectDateEnd();
+                         },
                          readOnly: true,
-                         controller:endDateController,
+                         controller:endReularDateController,
                          decoration: InputDecoration(
                              border: InputBorder.none,
                              counterText: "",
@@ -753,6 +842,10 @@ String? razorpayId;
               child: TextFormField(
                 keyboardType: TextInputType.number,
                 controller: customdayController,
+                onChanged: (value){
+                  totalPrice = double.parse(value) * double.parse(fixedprice ?? '0.0');
+                  print('${totalPrice}______________');
+                },
                 decoration: InputDecoration(
 
                     counterText: "",
@@ -778,7 +871,7 @@ String? razorpayId;
                         child: TextFormField(
                           readOnly: true,
                           onTap: (){
-                            if(dayController.text.isEmpty){
+                            if(customdayController.text.isEmpty){
                              Fluttertoast.showToast(msg: "Please Select Days",backgroundColor: colors.primary);
                             }else {
                               _selectCustomDateStart();

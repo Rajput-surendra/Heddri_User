@@ -518,7 +518,9 @@ class StateProfile extends State<MyProfile> with TickerProviderStateMixin {
         // _getDivider(),
         _getDrawerItem(getTranslated(context, 'SHARE_APP')!,
             'assets/images/pro_share.svg'),
-        _getDrawerItem(getTranslated(context, 'DELETE')!,
+        CUR_USERID == "" || CUR_USERID == null
+            ? Container()
+            : _getDrawerItem(getTranslated(context, 'DELETE')!,
             'assets/images/delete.svg'),
         // CUR_USERID == "" || CUR_USERID == null ? Container() : _getDivider(),
         CUR_USERID == "" || CUR_USERID == null
@@ -709,7 +711,7 @@ class StateProfile extends State<MyProfile> with TickerProviderStateMixin {
                   shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.all(Radius.circular(5.0))),
                   content: Text(
-                    getTranslated(context, 'DELETE')!,
+                    getTranslated(context, 'DELETE_ACCOUNT')!,
                     style: Theme.of(this.context)
                         .textTheme
                         .subtitle1!
@@ -749,16 +751,22 @@ class StateProfile extends State<MyProfile> with TickerProviderStateMixin {
   }
 
   deleteAccount() async {
-    var request = http.MultipartRequest('POST', Uri.parse('$baseUrl/detete_user'));
+    var request = http.MultipartRequest('POST', Uri.parse('$baseUrl/delete_user'));
     request.fields.addAll({
       'user_id': CUR_USERID.toString()
     });
+    print(' ${request.fields}_________');
     http.StreamedResponse response = await request.send();
     if (response.statusCode == 200) {
      var result  =  await response.stream.bytesToString();
      var finalResult =  jsonDecode(result);
      Fluttertoast.showToast(msg: "${finalResult['message']}");
-     Navigator.pop(context);
+     SettingProvider settingProvider =
+     Provider.of<SettingProvider>(context, listen: false);
+     settingProvider.clearUserSession(context);
+     //favList.clear();
+     Navigator.of(context).pushNamedAndRemoveUntil(
+         '/home', (Route<dynamic> route) => false);
     }
     else {
     print(response.reasonPhrase);

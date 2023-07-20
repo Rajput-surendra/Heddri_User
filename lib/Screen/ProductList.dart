@@ -154,11 +154,11 @@ class StateProduct extends State<ProductList> with TickerProviderStateMixin {
         _dateValue = convertDateTimeDisplay(yourDate);
         print(_dateValue);
         dateFormate = DateFormat("yyyy/MM/dd").format(DateTime.parse(_dateValue ?? ""));
-        // dateController = TextEditingController(text: _dateValue);
+          dateController = TextEditingController(text: _dateValue);
 
 
       });
-    getProduct("0");
+    getProduct(_dateValue);
   }
 
   @override
@@ -1202,6 +1202,7 @@ class StateProduct extends State<ProductList> with TickerProviderStateMixin {
       FILTER_DATE: _dateValue.toString()
 
     };
+    print('_____parameter_____${parameter}_________');
     if (selId != null && selId != "") {
       parameter[ATTRIBUTE_VALUE_ID] = selId;
     }

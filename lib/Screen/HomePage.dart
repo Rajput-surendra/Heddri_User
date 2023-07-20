@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:developer';
 import 'dart:io';
-import 'dart:math';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:eshop_multivendor/Helper/ApiBaseHelper.dart';
 import 'package:eshop_multivendor/Helper/AppBtn.dart';
@@ -81,6 +81,7 @@ class _HomePageState extends State<HomePage>
   @override
   void initState() {
     super.initState();
+    getSetting();
     callApi();
     buttonController = new AnimationController(
         duration: new Duration(milliseconds: 2000), vsync: this);
@@ -1508,7 +1509,7 @@ class _HomePageState extends State<HomePage>
 
     _isNetworkAvail = await isNetworkAvailable();
     if (_isNetworkAvail) {
-      getSetting();
+       getSetting();
       getSlider();
       getCat();
       // getSeller();
@@ -1621,14 +1622,16 @@ class _HomePageState extends State<HomePage>
     Map parameter = Map();
     if (CUR_USERID != null) parameter = {
       USER_ID: CUR_USERID,
-      "type": "payment_method"
+       "type": "payment_method"
     };
 
     apiBaseHelper.postAPICall(getSettingApi, parameter).then((getdata) async {
+      log(getdata['data'].toString());
       bool error = getdata["error"];
       String? msg = getdata["message"];
-      print("Setting-------------${getSettingApi.toString()}");
-      print("Parameter-------------${parameter.toString()}");
+      //print("Setting-------------${getSettingApi.toString()}");
+     // print("Parameter-------------${parameter.toString()}");
+
 
       SharedPreferences prefs = await SharedPreferences.getInstance();
       if (!error) {
@@ -1645,12 +1648,16 @@ class _HomePageState extends State<HomePage>
         extendImg = data["expand_product_images"] == "1" ? true : false;
         String? del = data["area_wise_delivery_charge"];
         String? time = data["time_slot_config"]["starting_date"];
-        String? timeSlot = data["time_slots"][0]['last_order_time'];
-        print("TIME_______${time}");
-          print("Slot${timeSlot}");
+        String? timeSlot = data["time_slots"]['last_order_time'];
+        String?  planFixPrice = getdata ["system_settings"][0]["plan_fix_price"];
+        print('____planFixPrice______${planFixPrice}_________');
+
+         // print("Slot${timeSlot}");
         MIN_ALLOW_CART_AMT = data[MIN_CART_AMT];
         prefs.setString("time", time.toString());
         prefs.setString("timeSlot", timeSlot.toString());
+          prefs.setString('fixedPrice', planFixPrice.toString());
+        //print('_____planFixPrice.toString_____${planFixPrice.toString}_________');
         if (del == "0")
           ISFLAT_DEL = true;
         else
@@ -1744,13 +1751,13 @@ class _HomePageState extends State<HomePage>
   }
 
   final _chars = 'AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz1234567890';
-  Random _rnd = Random();
+  //Random _rnd = Random();
 
-  String getRandomString(int length) => String.fromCharCodes(Iterable.generate(
-      length, (_) => _chars.codeUnitAt(_rnd.nextInt(_chars.length))));
+  // String getRandomString(int length) => String.fromCharCodes(Iterable.generate(
+  //     length, (_) => _chars.codeUnitAt(_rnd.nextInt(_chars.length))));
 
   Future<Null> generateReferral() async {
-    String refer = getRandomString(8);
+    String refer = 'getRandomString(8)';
 
     Map parameter = {
       REFERCODE: refer,

@@ -411,6 +411,7 @@ class StatePayment extends State<Payment> with TickerProviderStateMixin {
                                                 onTap: (){
                                                   DateTime dateTime = DateTime.now();
                                                   int currentTime =  dateTime.hour;
+                                                  print('__________${timeSlotModel!.data![i].toTime}_________');
                                                   List preTime = timeSlotModel!.data![i].toTime!.split(" ");
                                                     var finTime = preTime[0].toString().split(":");
                                                     int finalTime = int.parse(finTime[0]);
