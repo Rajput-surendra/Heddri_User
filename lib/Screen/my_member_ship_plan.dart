@@ -33,7 +33,7 @@ class _MyMemberShipPlanState extends State<MyMemberShipPlan> {
     request.fields.addAll({
       'user_id': CUR_USERID.toString()
     });
-
+    print('___request.fields_______${request.fields}_________');
     request.headers.addAll(headers);
     http.StreamedResponse response = await request.send();
     if (response.statusCode == 200) {
@@ -54,13 +54,14 @@ class _MyMemberShipPlanState extends State<MyMemberShipPlan> {
     return Scaffold(
       appBar: getSimpleAppBar(getTranslated(context, 'MEMBER_SHIP_PNAN_MY')!,context),
       body:
-      getPlanListModel ==  null || getPlanListModel == ""?Center(child: CircularProgressIndicator()): Padding(
+      getPlanListModel == null ? Center(child: CircularProgressIndicator()) : getPlanListModel?.data?.length == 0 ? Text("No Plans Data !!"):
+      Padding(
         padding: const EdgeInsets.all(8.0),
         child: Container(
           child: ListView.builder(
             shrinkWrap: true,
-            physics: NeverScrollableScrollPhysics(),
-            itemCount: getPlanListModel!.data!.length,
+            // physics: NeverScrollableScrollPhysics(),
+            itemCount: getPlanListModel?.data?.length,
             itemBuilder: (context, index) {
               return  Card(
                 color: colors.whiteTemp,
@@ -73,7 +74,7 @@ class _MyMemberShipPlanState extends State<MyMemberShipPlan> {
                       height: 10,
                     ),
                     Text(
-                      "${getPlanListModel!.data![index].planName}",
+                      "${getPlanListModel?.data?[index].planName}",
                       style: TextStyle(
                           fontWeight: FontWeight.bold,
                           fontSize: 20,
@@ -83,7 +84,7 @@ class _MyMemberShipPlanState extends State<MyMemberShipPlan> {
                       height: 5,
                     ),
                     Text(
-                      "${getPlanListModel!.data![index].planType}",
+                      "${getPlanListModel?.data?[index].planType}",
                       style: const TextStyle(
                           fontWeight: FontWeight.bold,
                           fontSize: 18,
@@ -100,7 +101,7 @@ class _MyMemberShipPlanState extends State<MyMemberShipPlan> {
                     Padding(
                         padding: const EdgeInsets.all(8.0),
                         child: Text(
-                          "INR ${getPlanListModel!.data![index].price}",
+                          "INR ${getPlanListModel?.data?[index].price}",
                           style: const TextStyle(
                             color: colors.blackTemp,
                             fontWeight: FontWeight.bold,
@@ -119,19 +120,26 @@ class _MyMemberShipPlanState extends State<MyMemberShipPlan> {
                            children: [
                              Text("Start Date: "),
                              Text("End Date: "),
+                             Text("Delivery Name: ")
                            ],
                          ),
                           Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                "${getPlanListModel!.data![index].startDate}",
+                                "${getPlanListModel?.data?[index].startDate}",
                                 style: TextStyle(
                                     fontWeight: FontWeight.bold,
                                     color: colors.blackTemp),
                               ),
                               Text(
-                                "${getPlanListModel!.data![index].endDate}",
+                                "${getPlanListModel?.data?[index].endDate}",
+                                style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    color: colors.blackTemp),
+                              ),
+                              Text(
+                                "${getPlanListModel?.data?[index].deliveryBoyName}",
                                 style: TextStyle(
                                     fontWeight: FontWeight.bold,
                                     color: colors.blackTemp),

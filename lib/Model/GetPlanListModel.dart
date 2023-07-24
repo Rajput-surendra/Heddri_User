@@ -1,6 +1,6 @@
 /// error : false
-/// message : "Data Succesfully Show"
-/// data : [{"id":"71","user_id":"200","name":"null","email":"null","plan_name":"Gold  5 Days","plan_type":"5 days","price":"2000","start_date":"2023-06-30","end_date":"2023-07-05","plan_id":"25"}]
+/// message : "Data Successfully Shown"
+/// data : [{"id":"77","user_id":"207","name":"Jay Shree","email":"null","plan_name":"Gold  5 Days","plan_type":"30 days","price":"2000","start_date":"2023-07-17","end_date":"2023-08-16","plan_id":"25","delivery_boy":"198","delivery_boy_name":"Surendra"}]
 
 class GetPlanListModel {
   GetPlanListModel({
@@ -48,16 +48,18 @@ GetPlanListModel copyWith({  bool? error,
 
 }
 
-/// id : "71"
-/// user_id : "200"
-/// name : "null"
+/// id : "77"
+/// user_id : "207"
+/// name : "Jay Shree"
 /// email : "null"
 /// plan_name : "Gold  5 Days"
-/// plan_type : "5 days"
+/// plan_type : "30 days"
 /// price : "2000"
-/// start_date : "2023-06-30"
-/// end_date : "2023-07-05"
+/// start_date : "2023-07-17"
+/// end_date : "2023-08-16"
 /// plan_id : "25"
+/// delivery_boy : "198"
+/// delivery_boy_name : "Surendra"
 
 class Data {
   Data({
@@ -70,7 +72,9 @@ class Data {
       String? price, 
       String? startDate, 
       String? endDate, 
-      String? planId,}){
+      String? planId, 
+      String? deliveryBoy, 
+      String? deliveryBoyName,}){
     _id = id;
     _userId = userId;
     _name = name;
@@ -81,6 +85,8 @@ class Data {
     _startDate = startDate;
     _endDate = endDate;
     _planId = planId;
+    _deliveryBoy = deliveryBoy;
+    _deliveryBoyName = deliveryBoyName;
 }
 
   Data.fromJson(dynamic json) {
@@ -94,6 +100,8 @@ class Data {
     _startDate = json['start_date'];
     _endDate = json['end_date'];
     _planId = json['plan_id'];
+    _deliveryBoy = json['delivery_boy'];
+    _deliveryBoyName = json['delivery_boy_name'];
   }
   String? _id;
   String? _userId;
@@ -105,6 +113,8 @@ class Data {
   String? _startDate;
   String? _endDate;
   String? _planId;
+  String? _deliveryBoy;
+  String? _deliveryBoyName;
 Data copyWith({  String? id,
   String? userId,
   String? name,
@@ -115,6 +125,8 @@ Data copyWith({  String? id,
   String? startDate,
   String? endDate,
   String? planId,
+  String? deliveryBoy,
+  String? deliveryBoyName,
 }) => Data(  id: id ?? _id,
   userId: userId ?? _userId,
   name: name ?? _name,
@@ -125,6 +137,8 @@ Data copyWith({  String? id,
   startDate: startDate ?? _startDate,
   endDate: endDate ?? _endDate,
   planId: planId ?? _planId,
+  deliveryBoy: deliveryBoy ?? _deliveryBoy,
+  deliveryBoyName: deliveryBoyName ?? _deliveryBoyName,
 );
   String? get id => _id;
   String? get userId => _userId;
@@ -136,6 +150,8 @@ Data copyWith({  String? id,
   String? get startDate => _startDate;
   String? get endDate => _endDate;
   String? get planId => _planId;
+  String? get deliveryBoy => _deliveryBoy;
+  String? get deliveryBoyName => _deliveryBoyName;
 
   Map<String, dynamic> toJson() {
     final map = <String, dynamic>{};
@@ -149,6 +165,8 @@ Data copyWith({  String? id,
     map['start_date'] = _startDate;
     map['end_date'] = _endDate;
     map['plan_id'] = _planId;
+    map['delivery_boy'] = _deliveryBoy;
+    map['delivery_boy_name'] = _deliveryBoyName;
     return map;
   }
 

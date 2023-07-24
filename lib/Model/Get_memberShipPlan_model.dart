@@ -64,7 +64,9 @@ class Data {
       String? status, 
       String? planType, 
       String? price, 
-      String? purchase,}){
+      String? purchase,
+      String? customisedPurchase,
+  }){
     _id = id;
     _plan = plan;
     _image = image;
@@ -72,6 +74,7 @@ class Data {
     _planType = planType;
     _price = price;
     _purchase = purchase;
+    _customisedPurchase = customisedPurchase;
 }
 
   Data.fromJson(dynamic json) {
@@ -82,6 +85,7 @@ class Data {
     _planType = json['plan_type'];
     _price = json['price'];
     _purchase = json['purchase'];
+    _customisedPurchase = json['customised_purchase'];
   }
   String? _id;
   String? _plan;
@@ -90,13 +94,14 @@ class Data {
   String? _planType;
   String? _price;
   String? _purchase;
+  String? _customisedPurchase;
 Data copyWith({  String? id,
   String? plan,
   String? image,
   String? status,
   String? planType,
   String? price,
-  String? purchase,
+  String? customisedPurchase,
 }) => Data(  id: id ?? _id,
   plan: plan ?? _plan,
   image: image ?? _image,
@@ -104,6 +109,7 @@ Data copyWith({  String? id,
   planType: planType ?? _planType,
   price: price ?? _price,
   purchase: purchase ?? _purchase,
+  customisedPurchase: _customisedPurchase ?? _customisedPurchase,
 );
   String? get id => _id;
   String? get plan => _plan;
@@ -112,6 +118,7 @@ Data copyWith({  String? id,
   String? get planType => _planType;
   String? get price => _price;
   String? get purchase => _purchase;
+  String? get customisedPurchase => _customisedPurchase;
 
   Map<String, dynamic> toJson() {
     final map = <String, dynamic>{};
@@ -122,6 +129,7 @@ Data copyWith({  String? id,
     map['plan_type'] = _planType;
     map['price'] = _price;
     map['purchase'] = _purchase;
+    map['customised_purchase'] = _customisedPurchase;
     return map;
   }
 

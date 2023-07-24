@@ -154,8 +154,6 @@ class StatePayment extends State<Payment> with TickerProviderStateMixin {
    timeSlot = prefs.getString("timeSlot");
    print("tttttttttttt${time}");
    print("pppppppppp${timeSlot}");
-
-
  }
   Widget noInternet(BuildContext context) {
     return Center(
@@ -199,11 +197,8 @@ class StatePayment extends State<Payment> with TickerProviderStateMixin {
     print("SSSSSSSSSSS${NewTime}");
     print("sds ${dTime} and ${dTime[0]}");
   }
-
   TimeSlotModel? timeSlotModel;
-
   DateTime currentTime = DateTime.now();
-
   getTimeSlot(String Sdate)async{
     print("working here ${Sdate}");
     var headers = {
@@ -227,12 +222,8 @@ class StatePayment extends State<Payment> with TickerProviderStateMixin {
     }
   }
 
-
-
-
   @override
   Widget build(BuildContext context) {
-
     return SafeArea(
       bottom: true,
       top: false,
@@ -411,7 +402,7 @@ class StatePayment extends State<Payment> with TickerProviderStateMixin {
                                                 onTap: (){
                                                   DateTime dateTime = DateTime.now();
                                                   int currentTime =  dateTime.hour;
-                                                  print('__________${timeSlotModel!.data![i].toTime}_________');
+                                                  // print('__________${timeSlotModel!.data![i].toTime}_________');
                                                   List preTime = timeSlotModel!.data![i].toTime!.split(" ");
                                                     var finTime = preTime[0].toString().split(":");
                                                     int finalTime = int.parse(finTime[0]);
