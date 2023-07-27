@@ -573,7 +573,7 @@ class _SendOtpState extends State<SendOtp> with TickerProviderStateMixin {
       //  bottom: height * 0.1,
       child: SizedBox(
         width: 100,
-        height: 100,
+        height: 90,
         child: Image.asset(
           'assets/images/loginlogo.png',
         ),

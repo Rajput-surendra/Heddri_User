@@ -221,8 +221,9 @@ class _HomePageState extends State<Dashboard> with TickerProviderStateMixin {
       centerTitle: _selBottom == 0 ? true : false,
       title: _selBottom == 0
           ? Image.asset(
-              'assets/images/titleicon.png',
-              height: 32,
+              'assets/images/titleicon.png',color: Colors.black,
+              height: 70,
+
             )
           : Text(
               title!,

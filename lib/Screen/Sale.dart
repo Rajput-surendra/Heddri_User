@@ -1136,7 +1136,7 @@ class _SaleState extends State<Sale>
                         disList[index].toString() + "%",
                         style: TextStyle(
                             color: curDis == index
-                                ? colors.blackTemp
+                                ? colors.whiteTemp
                                 : Theme.of(context).colorScheme.fontColor),
                       ),
                     ),
